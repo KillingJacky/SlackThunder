@@ -50,8 +50,6 @@ def retry(f_or_arg, *args):
 
 
 class ThunderRemoteDownload(object):
-    default_page_size = 100
-    default_bt_page_size = 9999
 
     def __init__(self, username=None, password=None, cookie_path=None, login=True, verification_code_reader=None):
         self.username = username
@@ -243,9 +241,9 @@ class ThunderRemoteDownload(object):
         if not username and self.has_cookie('.xunlei.com', 'usernewno'):
             username = self.get_username()
         if not username:
-            raise NotImplementedError('Missing username')
+            raise Exception('Missing username')
         if not password:
-            raise NotImplementedError('Missing password')
+            raise Exception('Missing password')
 
         logger.info('login')
         self.check_device_id()
