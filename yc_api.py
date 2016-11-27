@@ -216,16 +216,18 @@ class ThunderRemoteDownload(object):
     def is_session_timeout(self, html):
         logger.info('is_session_timeout?')
         logger.debug('html: {}'.format(html))
-        is_timeout = html == '''<script>document.cookie ="sessionid=; path=/; domain=xunlei.com"; document.cookie ="lx_sessionid=; path=/; domain=vip.xunlei.com";top.location='http://cloud.vip.xunlei.com/task.html?error=1'</script>''' or html == '''<script>document.cookie ="sessionid=; path=/; domain=xunlei.com"; document.cookie ="lsessionid=; path=/; domain=xunlei.com"; document.cookie ="lx_sessionid=; path=/; domain=vip.xunlei.com";top.location='http://cloud.vip.xunlei.com/task.html?error=2'</script>''' or html == '''<script>document.cookie ="sessionid=; path=/; domain=xunlei.com"; document.cookie ="lsessionid=; path=/; domain=xunlei.com"; document.cookie ="lx_sessionid=; path=/; domain=vip.xunlei.com";document.cookie ="lx_login=; path=/; domain=vip.xunlei.com";top.location='http://cloud.vip.xunlei.com/task.html?error=1'</script>'''
-        if is_timeout:
+        # timeout warning 1:
+        # jQuery4444817808_1480233929775({"msg": "user not login", "rtn": 1004})
+        timeout_test = r'(not login)|("rtn": 1004)'
+        if re.search(timeout_test, html):
             return True
+
         maybe_timeout = html == '''rebuild({"rtcode":-1,"list":[]})'''
         if maybe_timeout:
-            if self.login_time and time.time() - self.login_time < 60 * 10:  # 10 minutes
-                return False
-            else:
+            if self.login_time and time.time() - self.login_time > 60 * 10:  # 10 minutes
                 return True
-        return is_timeout
+
+        return False
 
     def read_verification_code(self):
         if not self.verification_code_reader:

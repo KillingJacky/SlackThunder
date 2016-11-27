@@ -276,7 +276,13 @@ if __name__ == '__main__':
     skip_first_msg = 0
     if sc.rtm_connect():
         while True:
-            msgs = sc.rtm_read()
+            msgs = None
+            try:
+                msgs = sc.rtm_read()
+            except Exception as e:
+                logger.debug(e)
+                continue
+
             if msgs and isinstance(msgs, list) and len(msgs) > 0:
                 for msg in msgs:
                     print msg
