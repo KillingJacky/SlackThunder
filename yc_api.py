@@ -10,7 +10,7 @@ import urllib2
 import cookielib
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:11.0) Gecko/20100101 Firefox/11.0'
-LOG_LEVEL = logging.DEBUG
+LOG_LEVEL = logging.INFO
 
 logger = logging.getLogger()
 logger.setLevel(LOG_LEVEL)

@@ -85,7 +85,7 @@ def process_slack_msg(msg, dl):
             dl.select_peer(peer.get('pid'))
             return pretty_print_list(peers, ['name'], check_index=index)
         except Exception as e:
-            logger.debug(e)
+            logger.warning(e)
             return str(e)
 
     elif re.search(r'adddir (\S+)', text):
@@ -99,7 +99,7 @@ def process_slack_msg(msg, dl):
                 return str(dir_list)+'\n'
 
         except Exception as e:
-            logger.debug(e)
+            logger.warning(e)
             return str(e)
 
     elif re.search(r'listdir', text):
@@ -111,7 +111,7 @@ def process_slack_msg(msg, dl):
             return pretty_print_list(dirs, ['name'])
 
         except Exception as e:
-            logger.debug(e)
+            logger.warning(e)
             return str(e)
 
     elif re.search(r'rmdir (\d+)', text):
@@ -125,7 +125,7 @@ def process_slack_msg(msg, dl):
                 return str(dir_list)+'\n'
 
         except Exception as e:
-            logger.debug(e)
+            logger.warning(e)
             return str(e)
 
     elif re.search(r'cleardir', text):
@@ -138,7 +138,7 @@ def process_slack_msg(msg, dl):
                 return str(dir_list)+'\n'
 
         except Exception as e:
-            logger.debug(e)
+            logger.warning(e)
             return str(e)
 
     elif re.search(r'ping', text):
@@ -155,7 +155,7 @@ def process_slack_msg(msg, dl):
 
             return result
         except Exception as e:
-            logger.debug(e)
+            logger.warning(e)
             return str(e)
 
     elif re.search(r'listfini', text):
@@ -168,7 +168,7 @@ def process_slack_msg(msg, dl):
 
             return result
         except Exception as e:
-            logger.debug(e)
+            logger.warning(e)
             return str(e)
 
     elif re.search(r'rmtask (\d+)', text):
@@ -183,7 +183,7 @@ def process_slack_msg(msg, dl):
             return str(result)
 
         except Exception as e:
-            logger.debug(e)
+            logger.warning(e)
             return str(e)
 
     else:
@@ -202,7 +202,7 @@ def process_slack_msg(msg, dl):
                 result = dl.create_task(url, dir_index)
                 return str(result)
             except Exception as e:
-                logger.debug(e)
+                logger.warning(e)
                 return str(e)
 
         m = re.search(r'(magnet\:|ed2k\:|http\:|https\:|ftp\:)(\S+)', text)
@@ -213,7 +213,7 @@ def process_slack_msg(msg, dl):
                 result = dl.create_task(url)
                 return str(result)
             except Exception as e:
-                logger.debug(e)
+                logger.warning(e)
                 return str(e)
 
 
@@ -280,12 +280,12 @@ if __name__ == '__main__':
             try:
                 msgs = sc.rtm_read()
             except Exception as e:
-                logger.debug(e)
+                logger.warning(e)
                 continue
 
             if msgs and isinstance(msgs, list) and len(msgs) > 0:
                 for msg in msgs:
-                    print msg
+                    #print msg
                     if msg.get('type') == 'hello': logger.info('connected')
                     if msg.get('type') != 'message': continue
                     if msg.get('channel') != channel_id: continue
@@ -297,11 +297,11 @@ if __name__ == '__main__':
                         skip_first_msg = 1
                         continue
 
-                    logger.debug('-------------------')
+                    logger.info('-------------------')
                     result = process_slack_msg(msg, dl)
                     if result[-1] != '\n': result += '\n'
                     result += '----\n'
-                    logger.debug(result)
+                    logger.info(result)
                     sc.rtm_send_message(channel_id, result)
                     # send message with the Web API will be better, but I'm facing badly network connection
                     # issues with this type API. Rather, have to fallback to the ugly RTM API.
@@ -315,7 +315,7 @@ if __name__ == '__main__':
                     #     if resp.get('ok'): break;
                     #     break
                     #     time.sleep(2)
-                    logger.debug('-------------------')
+                    logger.info('-------------------')
             time.sleep(1)
     else:
         logger.error("Connection Failed, invalid token?")
